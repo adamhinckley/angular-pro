@@ -19,8 +19,13 @@ import { User } from "./auth-form.interface";
 
 @Component({
     selector: "auth-form",
-    // #email on line 30 connects to @ViewChild on line 47
-    //it is then logged on line 58 and both email inputs show up in the console
+    styles: [
+        `
+            .email {
+                border-color: #9f72e6;
+            }
+        `
+    ],
     template: `
         <div>
             <form (ngSubmit)="onSubmit(form.value)" #form="ngForm">
@@ -54,8 +59,11 @@ export class AuthFormComponent implements AfterContentInit, AfterViewInit {
 
     constructor(private cd: ChangeDetectorRef) {}
 
+    // nativeElement allows for setting attributes to the form in this component
     ngAfterViewInit() {
-        console.log(this.email);
+        this.email.nativeElement.setAttribute("placeholder", "Enter your email address");
+        this.email.nativeElement.classList.add("email");
+        this.email.nativeElement.focus();
         if (this.message) {
             this.message.forEach(message => {
                 message.days = 30;
