@@ -1,10 +1,12 @@
 import {
     Component,
     ChangeDetectorRef,
+    ElementRef,
     Output,
+    ViewChild,
     ViewChildren,
-    EventEmitter,
     AfterViewInit,
+    EventEmitter,
     ContentChildren,
     QueryList,
     AfterContentInit
@@ -17,23 +19,21 @@ import { User } from "./auth-form.interface";
 
 @Component({
     selector: "auth-form",
+    // #email on line 30 connects to @ViewChild on line 47
+    //it is then logged on line 58 and both email inputs show up in the console
     template: `
         <div>
             <form (ngSubmit)="onSubmit(form.value)" #form="ngForm">
                 <ng-content select="h3"></ng-content>
                 <label>
                     Email address
-                    <input type="email" name="email" ngModel />
+                    <input type="email" name="email" ngModel #email />
                 </label>
                 <label>
                     Password
                     <input type="password" name="password" ngModel />
                 </label>
                 <ng-content select="auth-remember"></ng-content>
-                <auth-message [style.display]="showMessage ? 'inherit' : 'none'">
-                </auth-message>
-                <auth-message [style.display]="showMessage ? 'inherit' : 'none'">
-                </auth-message>
                 <auth-message [style.display]="showMessage ? 'inherit' : 'none'">
                 </auth-message>
                 <ng-content select="button"></ng-content>
@@ -44,6 +44,8 @@ import { User } from "./auth-form.interface";
 export class AuthFormComponent implements AfterContentInit, AfterViewInit {
     showMessage: boolean;
 
+    @ViewChild("email") email: ElementRef;
+
     @ViewChildren(AuthMessageComponent) message: QueryList<AuthMessageComponent>;
 
     @ContentChildren(AuthRememberComponent) remember: QueryList<AuthRememberComponent>;
@@ -53,6 +55,7 @@ export class AuthFormComponent implements AfterContentInit, AfterViewInit {
     constructor(private cd: ChangeDetectorRef) {}
 
     ngAfterViewInit() {
+        console.log(this.email);
         if (this.message) {
             this.message.forEach(message => {
                 message.days = 30;
