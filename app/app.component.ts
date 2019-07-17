@@ -3,8 +3,8 @@ import {
     ViewContainerRef,
     ViewChild,
     AfterContentInit,
-    ComponentFactoryResolver,
-    ComponentRef
+    ComponentRef,
+    TemplateRef
 } from "@angular/core";
 
 import { AuthFormComponent } from "./auth-form/auth-form.component";
@@ -15,9 +15,10 @@ import { User } from "./auth-form/auth-form.interface";
     selector: "app-root",
     template: `
         <div>
-            <button (click)="destroyComponent()">Destroy</button>
-            <button (click)="moveComponent()">Move</button>
             <div #entry></div>
+            <template #template>
+                Adam : Boise
+            </template>
         </div>
     `
 })
@@ -25,28 +26,9 @@ export class AppComponent implements AfterContentInit {
     component: ComponentRef<AuthFormComponent>;
 
     @ViewChild("entry", { read: ViewContainerRef }) entry: ViewContainerRef;
-
-    constructor(private resolver: ComponentFactoryResolver) {}
+    @ViewChild("template") template: TemplateRef<any>;
 
     ngAfterContentInit() {
-        const authFormFactory = this.resolver.resolveComponentFactory(AuthFormComponent);
-        this.entry.createComponent(authFormFactory);
-        this.component = this.entry.createComponent(authFormFactory, 0);
-        this.component.instance.title = "Create Account";
-        this.component.instance.submitted.subscribe(this.loginUser);
-    }
-
-    destroyComponent() {
-        this.component.destroy();
-    }
-
-    moveComponent() {
-        // moves the component from index 0 to index 1
-        // it's originally assigned to index 0 on line 34
-        this.entry.move(this.component.hostView, 1);
-    }
-
-    loginUser(user: User) {
-        console.log("Login", user);
+        this.entry.createEmbeddedView(this.template);
     }
 }
