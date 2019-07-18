@@ -15,12 +15,21 @@ import { User } from "./auth-form/auth-form.interface";
     selector: "app-root",
     template: `
         <div>
-            <ng-container [ngTemplateOutlet]="template"> </ng-container>
+            <ng-container
+                [ngTemplateOutlet]="template"
+                [ngTemplateOutletContext]="context"
+            >
+            </ng-container>
             <div #entry></div>
-            <template #template>
-                Adam : Boise, ID
+            <template #template let-name let-location="location">
+                {{ name }} : {{ location }}
             </template>
         </div>
     `
 })
-export class AppComponent {}
+export class AppComponent {
+    context = {
+        $implicit: "Adam",
+        location: "Boise ID"
+    };
+}
