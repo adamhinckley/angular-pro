@@ -16,8 +16,8 @@ import { User } from "./auth-form/auth-form.interface";
     template: `
         <div>
             <div #entry></div>
-            <template #template>
-                Adam : Boise
+            <template #template let-name let-location="location">
+                {{ name }} : {{ location }}
             </template>
         </div>
     `
@@ -29,6 +29,11 @@ export class AppComponent implements AfterContentInit {
     @ViewChild("template") template: TemplateRef<any>;
 
     ngAfterContentInit() {
-        this.entry.createEmbeddedView(this.template);
+        this.entry.createEmbeddedView(this.template, {
+            //implicit values will respond to any let statement in the HTML
+            //as can be seen on line 20
+            $implicit: "Adam",
+            location: "Boise, ID"
+        });
     }
 }
