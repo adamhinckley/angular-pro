@@ -15,25 +15,12 @@ import { User } from "./auth-form/auth-form.interface";
     selector: "app-root",
     template: `
         <div>
+            <ng-container [ngTemplateOutlet]="template"> </ng-container>
             <div #entry></div>
-            <template #template let-name let-location="location">
-                {{ name }} : {{ location }}
+            <template #template>
+                Adam : Boise, ID
             </template>
         </div>
     `
 })
-export class AppComponent implements AfterContentInit {
-    component: ComponentRef<AuthFormComponent>;
-
-    @ViewChild("entry", { read: ViewContainerRef }) entry: ViewContainerRef;
-    @ViewChild("template") template: TemplateRef<any>;
-
-    ngAfterContentInit() {
-        this.entry.createEmbeddedView(this.template, {
-            //implicit values will respond to any let statement in the HTML
-            //as can be seen on line 20
-            $implicit: "Adam",
-            location: "Boise, ID"
-        });
-    }
-}
+export class AppComponent {}
