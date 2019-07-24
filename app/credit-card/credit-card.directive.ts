@@ -1,9 +1,13 @@
-import { Directive, HostListener } from "@angular/core";
+import { Directive, HostListener, HostBinding } from "@angular/core";
 
 @Directive({
     selector: "[credit-card]"
 })
 export class CreditCardDirective {
+    //attaches to the host, in this case it adjusts the style of the input
+    @HostBinding("style.border")
+    border: string;
+
     //host listener is being hosted by the input in app.component.ts
     @HostListener("input", ["$event"])
     onkeydown(event: KeyboardEvent) {
@@ -19,6 +23,11 @@ export class CreditCardDirective {
             console.log(numbers);
         }
 
-        input.value = numbers.join("  ");
+        input.value = numbers.join(" ");
+
+        this.border = "";
+        if (/[^\d]+/.test(trimmed)) {
+            this.border = "1px solid red";
+        }
     }
 }
