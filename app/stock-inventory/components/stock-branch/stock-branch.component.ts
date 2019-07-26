@@ -1,8 +1,12 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
+import { FormGroup } from "@angular/forms";
 
 @Component({
     selector: "stock-branch",
     styleUrls: ["stock-branch.component.scss"],
     templateUrl: "./stock-branch.component.html"
 })
-export class StockBranchComponent {}
+export class StockBranchComponent {
+    @Input()
+    parent: FormGroup;
+}
