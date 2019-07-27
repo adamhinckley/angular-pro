@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, FormArray } from "@angular/forms";
+import { Product } from "../../models/product.interface";
 
 @Component({
     selector: "stock-inventory",
@@ -7,6 +8,14 @@ import { FormControl, FormGroup, FormArray } from "@angular/forms";
     templateUrl: "./stock-inventory.component.html"
 })
 export class StockInventoryComponent {
+    products: Product[] = [
+        { id: 1, price: 2800, name: "MacBook Pro" },
+        { id: 2, price: 2000, name: "Ultra-wide monitor" },
+        { id: 3, price: 25, name: "Web cam" },
+        { id: 4, price: 100, name: "keyboard" },
+        { id: 5, price: 160, name: "Air Pods" }
+    ];
+
     form = new FormGroup({
         store: new FormGroup({
             branch: new FormControl("abdc"),
