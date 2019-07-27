@@ -41,6 +41,11 @@ export class StockInventoryComponent {
         control.push(this.createStock(stock));
     }
 
+    removeStock({ group, index }: { group: FormGroup; index: number }) {
+        const control = this.form.get("stock") as FormArray;
+        control.removeAt(index);
+    }
+
     onsubmit() {
         console.log("submit", this.form.value);
     }
