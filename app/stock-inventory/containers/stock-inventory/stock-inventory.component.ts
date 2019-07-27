@@ -21,12 +21,21 @@ export class StockInventoryComponent {
             branch: new FormControl("abdc"),
             code: new FormControl("1234")
         }),
-        selector: new FormGroup({
-            product_id: new FormControl(""),
-            quantity: new FormControl(10)
-        }),
-        stock: new FormArray([])
+        selector: this.createStock({}),
+        stock: new FormArray([
+            this.createStock({ product_id: 1, quantity: 10 }),
+            this.createStock({ product_id: 3, quantity: 50 })
+        ])
     });
+
+    createStock(stock) {
+        const { product_id, quantity } = stock;
+        return new FormGroup({
+            product_id: new FormControl(parseInt(product_id, 10) || ""),
+            quantity: new FormControl(quantity || 10)
+        });
+    }
+
     onsubmit() {
         console.log("submit", this.form.value);
     }
