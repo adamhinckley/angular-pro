@@ -8,63 +8,74 @@ import "rxjs/add/observable/forkJoin";
 import { StockInventoryService } from "../../services/stock-inventory.service";
 
 @Component({
-    selector: "stock-inventory",
-    styleUrls: ["stock-inventory.component.scss"],
-    templateUrl: "./stock-inventory.component.html"
+  selector: "stock-inventory",
+  styleUrls: ["stock-inventory.component.scss"],
+  templateUrl: "./stock-inventory.component.html"
 })
 export class StockInventoryComponent implements OnInit {
-    products: Product[];
+  products: Product[];
+  total: number;
 
-    productMap: Map<number, Product>;
+  productMap: Map<number, Product>;
 
-    form = this.fb.group({
-        store: this.fb.group({
-            branch: "",
-            code: ""
-        }),
-        selector: this.createStock({}),
-        stock: this.fb.array([])
+  form = this.fb.group({
+    store: this.fb.group({
+      branch: "",
+      code: ""
+    }),
+    selector: this.createStock({}),
+    stock: this.fb.array([])
+  });
+
+  constructor(private fb: FormBuilder, private stockService: StockInventoryService) {}
+
+  ngOnInit() {
+    const cart = this.stockService.getCartItems();
+    const products = this.stockService.getProducts();
+
+    Observable.forkJoin(cart, products).subscribe(
+      ([cart, products]: [Item[], Product[]]) => {
+        const myMap = products.map<[number, Product]>(product => [product.id, product]);
+
+        this.productMap = new Map<number, Product>(myMap);
+        this.products = products;
+        cart.forEach(item => this.addStock(item));
+
+        this.calculateTotal(this.form.get("stock").value);
+
+        this.form
+          .get("stock")
+          .valueChanges.subscribe(value => this.calculateTotal(value));
+      }
+    );
+  }
+
+  calculateTotal(value: Item[]) {
+    const total = value.reduce((prev, next) => {
+      return prev + next.quantity * this.productMap.get(next.product_id).price;
+    }, 0);
+    this.total = total;
+  }
+
+  createStock(stock) {
+    const { product_id, quantity } = stock;
+    return this.fb.group({
+      product_id: parseInt(product_id, 10) || "",
+      quantity: quantity || 10
     });
+  }
 
-    constructor(private fb: FormBuilder, private stockService: StockInventoryService) {}
+  addStock(stock) {
+    const control = this.form.get("stock") as FormArray;
+    control.push(this.createStock(stock));
+  }
 
-    ngOnInit() {
-        const cart = this.stockService.getCartItems();
-        const products = this.stockService.getProducts();
+  removeStock({ group, index }: { group: FormGroup; index: number }) {
+    const control = this.form.get("stock") as FormArray;
+    control.removeAt(index);
+  }
 
-        Observable.forkJoin(cart, products).subscribe(
-            ([cart, products]: [Item[], Product[]]) => {
-                const myMap = products.map<[number, Product]>(product => [
-                    product.id,
-                    product
-                ]);
-
-                this.productMap = new Map<number, Product>(myMap);
-                this.products = products;
-                cart.forEach(item => this.addStock(item));
-            }
-        );
-    }
-
-    createStock(stock) {
-        const { product_id, quantity } = stock;
-        return this.fb.group({
-            product_id: parseInt(product_id, 10) || "",
-            quantity: quantity || 10
-        });
-    }
-
-    addStock(stock) {
-        const control = this.form.get("stock") as FormArray;
-        control.push(this.createStock(stock));
-    }
-
-    removeStock({ group, index }: { group: FormGroup; index: number }) {
-        const control = this.form.get("stock") as FormArray;
-        control.removeAt(index);
-    }
-
-    onsubmit() {
-        console.log("submit", this.form.value);
-    }
+  onsubmit() {
+    console.log("submit", this.form.value);
+  }
 }
